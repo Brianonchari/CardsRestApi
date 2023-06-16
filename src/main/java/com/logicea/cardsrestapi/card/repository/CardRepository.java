@@ -6,6 +6,7 @@ import com.logicea.cardsrestapi.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -34,6 +35,14 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     @Query("SELECT c FROM Card  c where c.createdBy.id = :user")
     List<Card> findAllByUser(Long user);
 
-//    @Query("SELECT c FROM Card c where c.createdBy.id = :user AND c.id = :cardId")
-//    Card getCardById(Long cardId);
+
+    @Modifying
+    @Query("UPDATE Card c SET c.name = :name, c.description = :description, c.color = :color, c.status = :status " +
+            "WHERE c.id = :cardId AND c.createdBy.id = :userId")
+    void updateCard(@Param("cardId") Long cardId,
+                    @Param("userId") Long userId,
+                    @Param("name") String name,
+                    @Param("description") String description,
+                    @Param("color") String color,
+                    @Param("status") CardStatus status);
 }

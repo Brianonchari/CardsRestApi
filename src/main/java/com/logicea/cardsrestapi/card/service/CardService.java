@@ -6,6 +6,7 @@ import com.logicea.cardsrestapi.card.dtos.responses.CardResponse;
 import com.logicea.cardsrestapi.card.dtos.responses.PagedResponse;
 import com.logicea.cardsrestapi.card.model.Card;
 import com.logicea.cardsrestapi.card.model.CardStatus;
+import com.logicea.cardsrestapi.exception.ApiResponse;
 import com.logicea.cardsrestapi.user.model.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +18,10 @@ import java.util.List;
 public interface CardService {
 
 
-    Card createCard(CardRequest cardRequest, User user);
+    ApiResponse createCard(CardRequest cardRequest, User user);
     List<Card> getAllCards(User user);
 
-    String updateCard(Long cardId,Long userId, CardUpdateRequest cardUpdateRequest);
+    ApiResponse updateCard(Long cardId, Long userId, CardUpdateRequest cardUpdateRequest);
 
     void  deleteCard(Long cardId, User user);
 

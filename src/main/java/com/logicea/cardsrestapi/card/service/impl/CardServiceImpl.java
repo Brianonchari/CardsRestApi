@@ -4,15 +4,12 @@ import com.logicea.cardsrestapi.card.dtos.requests.CardRequest;
 import com.logicea.cardsrestapi.card.dtos.requests.CardUpdateRequest;
 import com.logicea.cardsrestapi.card.dtos.responses.CardResponse;
 import com.logicea.cardsrestapi.card.dtos.responses.PagedResponse;
-import com.logicea.cardsrestapi.exception.CardNotFoundException;
+import com.logicea.cardsrestapi.exception.*;
 import com.logicea.cardsrestapi.card.model.Card;
 import com.logicea.cardsrestapi.card.model.CardStatus;
 import com.logicea.cardsrestapi.card.repository.CardRepository;
 import com.logicea.cardsrestapi.card.factory.CardFactory;
 import com.logicea.cardsrestapi.card.service.CardService;
-import com.logicea.cardsrestapi.exception.ForbiddenException;
-import com.logicea.cardsrestapi.exception.InvalidCardStatusException;
-import com.logicea.cardsrestapi.exception.UserNotFoundException;
 import com.logicea.cardsrestapi.user.model.Role;
 import com.logicea.cardsrestapi.user.model.User;
 import com.logicea.cardsrestapi.user.repository.UserRepository;
@@ -25,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.naming.AuthenticationException;
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -47,7 +45,7 @@ public class CardServiceImpl implements CardService {
      * @return
      */
     @Override
-    public Card createCard(CardRequest cardRequest, User user) {
+    public ApiResponse createCard(CardRequest cardRequest, User user) {
         String color = cardRequest.getColor();
         // Validate color format
         if (color != null && !color.matches("#[a-zA-Z0-9]{6}")) {
@@ -57,7 +55,8 @@ public class CardServiceImpl implements CardService {
                 .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + user.getId()));
 
         Card card = CardFactory.createCard(cardRequest,authenticatedUser);
-        return cardRepository.save(card);
+        cardRepository.save(card);
+        return new  ApiResponse(HttpStatus.CREATED.value(),"Card created successfully");
     }
 
     /**
@@ -79,7 +78,8 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public String updateCard(Long cardId,Long userId, CardUpdateRequest cardUpdateRequest) {
+    @Transactional
+    public ApiResponse updateCard(Long cardId,Long userId, CardUpdateRequest cardUpdateRequest) {
         if (cardUpdateRequest.getCardStatus() != null) {
             switch (cardUpdateRequest.getCardStatus() ) {
                 case TODO:
@@ -96,10 +96,16 @@ public class CardServiceImpl implements CardService {
         Card card = cardRepository.findById(cardId)
                 .orElseThrow(() -> new CardNotFoundException(HttpStatus.NOT_FOUND,"Card not found with ID: " + cardId));
 
-        Card updatedCard = CardFactory.updateCard(cardUpdateRequest,authenticatedUser,card);
-        cardRepository.save(updatedCard);
+        cardRepository.updateCard(
+                card.getId(),
+                authenticatedUser.getId(),
+                cardUpdateRequest.getName(),
+                cardUpdateRequest.getDescription(),
+                cardUpdateRequest.getColor(),
+                cardUpdateRequest.getCardStatus()
+                );
 
-        return "Card updated successfully";
+        return new ApiResponse(HttpStatus.OK.value(),"Card updated successfully");
     }
 
     @Override

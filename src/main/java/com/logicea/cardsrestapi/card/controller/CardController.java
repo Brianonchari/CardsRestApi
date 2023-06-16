@@ -2,7 +2,6 @@ package com.logicea.cardsrestapi.card.controller;
 
 import com.logicea.cardsrestapi.card.dtos.requests.CardRequest;
 import com.logicea.cardsrestapi.card.dtos.requests.CardUpdateRequest;
-import com.logicea.cardsrestapi.card.dtos.responses.CardResponse;
 import com.logicea.cardsrestapi.card.dtos.responses.PagedResponse;
 import com.logicea.cardsrestapi.card.model.Card;
 import com.logicea.cardsrestapi.card.model.CardStatus;
@@ -10,8 +9,6 @@ import com.logicea.cardsrestapi.card.service.CardService;
 import com.logicea.cardsrestapi.card.utils.Constants;
 import com.logicea.cardsrestapi.user.model.User;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,6 +21,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class CardController {
     private final CardService cardService;
+
     public CardController(CardService cardService) {
         this.cardService = cardService;
     }
@@ -32,7 +30,7 @@ public class CardController {
     @PreAuthorize("#user.role == #user.role.ADMIN or #user.role == #user.role.USER")
     public ResponseEntity<?> getCards(
             @AuthenticationPrincipal User user
-    ){
+    ) {
         return ResponseEntity.ok(cardService.getAllCards(user));
     }
 
@@ -78,7 +76,7 @@ public class CardController {
             @PathVariable Long userId,
             @PathVariable Long cardId
     ) {
-        return ResponseEntity.ok(cardService.getCardById(cardId,userId));
+        return ResponseEntity.ok(cardService.getCardById(cardId, userId));
     }
 
     @DeleteMapping("/{cardId}/users/{userId}")
@@ -88,7 +86,7 @@ public class CardController {
             @PathVariable Long cardId,
             @PathVariable Long userId
     ) {
-        cardService.deleteCard(cardId,user);
+        cardService.deleteCard(cardId, user);
         return ResponseEntity.noContent().build();
     }
 
