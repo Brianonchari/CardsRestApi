@@ -15,15 +15,17 @@ To run the project, follow these steps:
 
 The following endpoints are available in the API:
 
-| Endpoint                       | Method | Description                                          |
-|-------------------------------------|--------|------------------------------------------------------|
-| /api/cards                          | GET    | Get all cards                                        |
-| /api/cards/{cardId}/users/{userId}  | GET    | Get a specific card by ID                            |
-| /api/cards                          | POST   | Create a new card                                    |
-| /api/cards/{cardId}                 | PUT    | Update an existing card by ID                        |
-| /api/cards/{cardId}                 | DELETE | Delete a card by ID                                  |
-| /api/cards/search                   | GET    | Search for cards based on filters and criteria       |
-| /api/users/{userId}/cards           | GET    | Get all cards for a specific user                    |
+| Endpoint                           | Method | Description                                          |
+|------------------------------------|--------|------------------------------------------------------|
+| /api/auth/login                    | POST   | Get all cards                                        |
+| /api/auth/token                    | POST   | Get all cards                                        |
+ | /api/cards                         | GET    | Get all cards                                        |
+| /api/cards/{cardId}/users/{userId} | GET    | Get a specific card by ID                            |
+| /api/cards                         | POST   | Create a new card                                    |
+| /api/cards/{cardId}                | PUT    | Update an existing card by ID                        |
+| /api/cards/{cardId}                | DELETE | Delete a card by ID                                  |
+| /api/cards/search                  | GET    | Search for cards based on filters and criteria       |
+| /api/users/{userId}/cards          | GET    | Get all cards for a specific user                    |
 
 ## Users
 
@@ -55,4 +57,3 @@ To measure code coverage using JaCoCo, follow these instructions:
 2. Run the tests for your project. This will generate the coverage data.
 3. To view the code coverage report, execute the following command `mvn jacoco:report`
    This command will generate an HTML report in the target/site/jacoco directory.
-4. 
