@@ -2,6 +2,15 @@
 
 This project implements a REST API for managing cards. Users can create, update, and search for cards based on various criteria. Authentication is required to access the API, and users have different levels of access based on their roles.
 
+## Running the Project
+
+To run the project, follow these steps:
+
+1. Make sure you have Java 8 or above and Maven installed on your system.
+2. Clone the project repository to your local machine.
+3. Open a terminal or command prompt and navigate to the project directory.
+4. Build the project using the following command:
+
 ## Endpoints
 
 The following endpoints are available in the API:
@@ -20,10 +29,10 @@ The following endpoints are available in the API:
 
 The following table lists the users along with their names and passwords:
 
-| User ID | Name  | Password   |
-|---------|-------|------------|
-| 1       | John  | password   |
-| 2       | Jack  | password   |
+| User ID | Name                | Password   |
+|---------|---------------------|------------|
+| 1       | john@logicea.com    | password   |
+| 2       | jack@logicea.com    | password   |
 
 
 Feel free to populate the database with these users for testing purposes.
@@ -37,3 +46,13 @@ For example:
 GET /api/cards
 Authorization: Bearer <JWT>
 ```
+
+## Code Coverage with JaCoCo
+
+To measure code coverage using JaCoCo, follow these instructions:
+
+1. Ensure that you have added the JaCoCo plugin to your project's pom.xml file.
+2. Run the tests for your project. This will generate the coverage data.
+3. To view the code coverage report, execute the following command `mvn jacoco:report`
+   This command will generate an HTML report in the target/site/jacoco directory.
+4. 
