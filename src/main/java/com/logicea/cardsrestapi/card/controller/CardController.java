@@ -88,7 +88,7 @@ public class CardController {
             @PathVariable Long cardId,
             @PathVariable Long userId
     ) {
-        cardService.deleteCard(cardId);
+        cardService.deleteCard(cardId,user);
         return ResponseEntity.noContent().build();
     }
 

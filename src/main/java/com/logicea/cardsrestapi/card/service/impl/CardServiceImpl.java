@@ -28,6 +28,7 @@ import javax.naming.AuthenticationException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -52,18 +53,11 @@ public class CardServiceImpl implements CardService {
         if (color != null && !color.matches("#[a-zA-Z0-9]{6}")) {
             throw new IllegalArgumentException("Invalid color format. Color must start with '#' and be followed by 6 alphanumeric characters.");
         }
-
-
-
         User authenticatedUser = userRepository.findById(user.getId())
                 .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + user.getId()));
 
-        log.error("Authenticated user {}",authenticatedUser);
-
-
-        Card card = CardFactory.createCard(cardRequest,user);
+        Card card = CardFactory.createCard(cardRequest,authenticatedUser);
         return cardRepository.save(card);
-
     }
 
     /**
@@ -84,16 +78,8 @@ public class CardServiceImpl implements CardService {
         }
     }
 
-
-
     @Override
     public String updateCard(Long cardId,Long userId, CardUpdateRequest cardUpdateRequest) {
-        User authenticatedUser = userRepository.findById(userId)
-                .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + userId));
-
-        Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new CardNotFoundException(HttpStatus.NOT_FOUND,"Card not found with ID: " + cardId));
-
         if (cardUpdateRequest.getCardStatus() != null) {
             switch (cardUpdateRequest.getCardStatus() ) {
                 case TODO:
@@ -101,9 +87,14 @@ public class CardServiceImpl implements CardService {
                 case DONE:
                     break;
                 default:
-                    throw new InvalidCardStatusException(HttpStatus.BAD_REQUEST,"Invalid card status");
+                    throw new IllegalArgumentException("Invalid card status");
             }
         }
+        User authenticatedUser = userRepository.findById(userId)
+                .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + userId));
+
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new CardNotFoundException(HttpStatus.NOT_FOUND,"Card not found with ID: " + cardId));
 
         Card updatedCard = CardFactory.updateCard(cardUpdateRequest,authenticatedUser,card);
         cardRepository.save(updatedCard);
@@ -112,11 +103,17 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public void deleteCard(Long cardId) {
+    public void deleteCard(Long cardId,User user) {
+        User authenticatedUser = userRepository.findById(user.getId())
+                .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + user.getId()));
         Card card = cardRepository.findById(cardId)
                         .orElseThrow(()-> new CardNotFoundException(HttpStatus.NOT_FOUND,"Card not found with id "+ cardId));
 
-        cardRepository.deleteById(cardId);
+        if(Objects.equals(authenticatedUser.getId(), card.getId())){
+            cardRepository.deleteById(cardId);
+        }else {
+            throw new ForbiddenException(HttpStatus.FORBIDDEN,"You are not authorized to delete this card");
+        }
     }
 
     @Override
@@ -125,7 +122,7 @@ public class CardServiceImpl implements CardService {
                 .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + userId));
         Card card =  cardRepository.findById(cardId)
                 .orElseThrow(()-> new CardNotFoundException(HttpStatus.NOT_FOUND,"Card not found with id:"+cardId));
-     if(authenticatedUser.getId()==card.getCreatedBy().getId()){
+     if(Objects.equals(authenticatedUser.getId(), card.getCreatedBy().getId())){
          return card;
      }else {
          throw  new ForbiddenException(HttpStatus.FORBIDDEN,"You are not authorized to access this resource");

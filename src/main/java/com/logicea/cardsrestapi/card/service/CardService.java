@@ -22,7 +22,7 @@ public interface CardService {
 
     String updateCard(Long cardId,Long userId, CardUpdateRequest cardUpdateRequest);
 
-    void  deleteCard(Long cardId);
+    void  deleteCard(Long cardId, User user);
 
     Card getCardById(Long cardId,Long userId);
 

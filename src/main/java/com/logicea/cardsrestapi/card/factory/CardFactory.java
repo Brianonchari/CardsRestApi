@@ -39,6 +39,7 @@ public class CardFactory {
         return new Card.CardBuilder(name)
                 .description(description)
                 .color(color)
+                .user(user)
                 .status(status)
                 .build();
     }

@@ -162,4 +162,46 @@ public class CardServiceImplTest {
 
         Assert.assertEquals(card, result);
     }
+
+    @Test
+    public void testDeleteCard_ValidCardAndUser_DeletesCard() {
+        Long cardId = 1L;
+        Long userId = 1L;
+        User user = new User();
+        user.setId(userId);
+        Card card = new Card();
+        card.setId(cardId);
+        card.setCreatedBy(user);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(cardRepository.findById(cardId)).thenReturn(Optional.of(card));
+
+        cardService.deleteCard(cardId, user);
+
+        // Assert
+        verify(userRepository, times(1)).findById(userId);
+        verify(cardRepository, times(1)).findById(cardId);
+        verify(cardRepository, times(1)).deleteById(cardId);
+    }
+
+    @Test(expected = UserNotFoundException.class)
+    public void testDeleteCard_InvalidUser_ThrowsUserNotFoundException() {
+
+        Long cardId = 1L;
+        Long userId = 1L;
+
+        User user = new User();
+        user.setId(userId);
+
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        try {
+            cardService.deleteCard(cardId, new User());
+            Assert.fail("UserNotFoundException was not thrown");
+        } catch (UserNotFoundException e) {
+            Assert.assertEquals("User not found with ID: " + userId, e.getMessage());
+            throw e;
+        }
+    }
+
 }
