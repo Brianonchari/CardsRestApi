@@ -94,6 +94,7 @@
                 </executions>
             </plugin>
         </plugins>
+        <finalName>cards</finalName>
     </build>
 
 </project>
