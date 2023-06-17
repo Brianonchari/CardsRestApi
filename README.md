@@ -24,17 +24,17 @@ The following endpoints are available in the API:
 | /api/cards                         | POST   | Create a new card                                    |
 | /api/cards/{cardId}                | PUT    | Update an existing card by ID                        |
 | /api/cards/{cardId}                | DELETE | Delete a card by ID                                  |
-| /api/cards/search                  | GET    | Search for cards based on filters and criteria       |
-| /api/users/{userId}/cards          | GET    | Get all cards for a specific user                    |
+| /api/cards/search?name=NAME        | GET    | Search for cards based on filters and criteria       |
+| /api/cards/{cardId}/user/{userId}  | GET    | Get all cards for a specific user                    |
 
 ## Users
 
 The following table lists the users along with their names and passwords:
 
-| User ID | Name                | Password   |
-|---------|---------------------|------------|
-| 1       | john@logicea.com    | password   |
-| 2       | jack@logicea.com    | password   |
+| User ID | Name                | Password   | Role   |
+|---------|---------------------|------------|--------|
+| 1       | john@logicea.com    | password   | ADMIN  |
+| 2       | jack@logicea.com    | password   | MEMBER |
 
 
 Feel free to populate the database with these users for testing purposes.
