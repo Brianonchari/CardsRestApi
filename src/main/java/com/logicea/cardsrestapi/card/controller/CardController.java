@@ -9,6 +9,7 @@ import com.logicea.cardsrestapi.card.service.CardService;
 import com.logicea.cardsrestapi.card.utils.Constants;
 import com.logicea.cardsrestapi.user.model.User;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,7 +28,7 @@ public class CardController {
     }
 
     @GetMapping
-    @PreAuthorize("#user.role == #user.role.ADMIN or #user.role == #user.role.USER")
+    @PreAuthorize("#user.role == #user.role.ADMIN or #user.role == #user.role.MEMBER")
     public ResponseEntity<?> getCards(
             @AuthenticationPrincipal User user
     ) {
@@ -35,19 +36,19 @@ public class CardController {
     }
 
     @PostMapping
-    @PreAuthorize("#user.role == #user.role.ADMIN or #user.role == #user.role.USER")
+    @PreAuthorize("#user.role == #user.role.ADMIN or #user.role == #user.role.MEMBER")
     public ResponseEntity<?> createCard(@AuthenticationPrincipal User user, @RequestBody CardRequest cardRequest) {
-        return ResponseEntity.ok(cardService.createCard(cardRequest, user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(cardService.createCard(cardRequest, user));
     }
 
-    @PutMapping("/{cardId}/users/{userId}")
+    @PatchMapping("/{cardId}/users/{userId}")
     @PreAuthorize("#user.id == #userId")
     public ResponseEntity<?> updateCard(
             @AuthenticationPrincipal User user,
             @PathVariable Long cardId,
             @PathVariable Long userId,
             @RequestBody CardUpdateRequest cardUpdateRequest) {
-        return ResponseEntity.ok(cardService.updateCard(cardId, userId, cardUpdateRequest));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(cardService.updateCard(cardId, userId, cardUpdateRequest));
     }
 
     @GetMapping("/search")
@@ -62,10 +63,7 @@ public class CardController {
             @RequestParam(value = "size", required = false, defaultValue = Constants.DEFAULT_PAGE_SIZE) Integer size
 
     ) {
-
         PagedResponse<Card> responses = cardService.searchCards(user.getId(), name, color, status, startDate, endDate, page, size);
-
-        log.error("Cards {}", responses);
         return ResponseEntity.ok(responses);
     }
 

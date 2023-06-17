@@ -2,15 +2,18 @@ package com.logicea.cardsrestapi.card.service.impl;
 
 import com.logicea.cardsrestapi.card.dtos.requests.CardRequest;
 import com.logicea.cardsrestapi.card.dtos.requests.CardUpdateRequest;
-import com.logicea.cardsrestapi.card.dtos.responses.CardResponse;
 import com.logicea.cardsrestapi.card.dtos.responses.PagedResponse;
-import com.logicea.cardsrestapi.exception.*;
+import com.logicea.cardsrestapi.card.factory.CardFactory;
 import com.logicea.cardsrestapi.card.model.Card;
+import com.logicea.cardsrestapi.user.model.Role;
 import com.logicea.cardsrestapi.card.model.CardStatus;
 import com.logicea.cardsrestapi.card.repository.CardRepository;
-import com.logicea.cardsrestapi.card.factory.CardFactory;
 import com.logicea.cardsrestapi.card.service.CardService;
-import com.logicea.cardsrestapi.user.model.Role;
+import com.logicea.cardsrestapi.exception.ApiResponse;
+import com.logicea.cardsrestapi.exception.CardNotFoundException;
+import com.logicea.cardsrestapi.exception.ForbiddenException;
+import com.logicea.cardsrestapi.exception.UserNotFoundException;
+
 import com.logicea.cardsrestapi.user.model.User;
 import com.logicea.cardsrestapi.user.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +24,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.naming.AuthenticationException;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -70,7 +72,7 @@ public class CardServiceImpl implements CardService {
 
         if(currentUser.getRole()== Role.ADMIN){
             return cardRepository.findAll();
-        }else if (currentUser.getRole()==Role.USER){
+        }else if (currentUser.getRole()==Role.MEMBER){
             return cardRepository.findAllByUser(currentUser.getId());
         }else {
             throw new UserNotFoundException(HttpStatus.UNAUTHORIZED,"You are unauthorized to retrieve this resource");
