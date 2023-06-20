@@ -19,10 +19,10 @@ The following endpoints are available in the API:
 |------------------------------------|--------|------------------------------------------------------|
 | /api/auth/login                    | POST   | Get all cards                                        |
 | /api/auth/token                    | POST   | Get all cards                                        |
- | /api/cards                         | GET    | Get all cards                                        |
+ | /api/cards                        | GET    | Get all cards                                        |
 | /api/cards/{cardId}/users/{userId} | GET    | Get a specific card by ID                            |
 | /api/cards                         | POST   | Create a new card                                    |
-| /api/cards/{cardId}                | PUT    | Update an existing card by ID                        |
+| /api/cards/{cardId}                | PATCH  | Update an existing card by ID                        |
 | /api/cards/{cardId}                | DELETE | Delete a card by ID                                  |
 | /api/cards/search?name=NAME        | GET    | Search for cards based on filters and criteria       |
 | /api/cards/{cardId}/user/{userId}  | GET    | Get all cards for a specific user                    |
