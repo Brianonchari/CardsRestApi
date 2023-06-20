@@ -1,11 +1,13 @@
-package com.logicea.cardsrestapi.exception;
+package com.logicea.cardsrestapi.handlers;
 
+import com.logicea.cardsrestapi.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ServerErrorException;
 
 import java.nio.file.AccessDeniedException;
 
@@ -23,7 +25,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(ServerErrorException.class)
     public ResponseEntity<ApiResponse> handleGenericException(Exception ex) {
         System.out.println(ex.getMessage());
         ApiResponse apiResponse = new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage());

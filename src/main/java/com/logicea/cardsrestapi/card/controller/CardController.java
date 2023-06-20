@@ -87,5 +87,4 @@ public class CardController {
         cardService.deleteCard(cardId, user);
         return ResponseEntity.noContent().build();
     }
-
 }

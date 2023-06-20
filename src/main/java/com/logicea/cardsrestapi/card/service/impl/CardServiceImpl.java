@@ -54,11 +54,11 @@ public class CardServiceImpl implements CardService {
             throw new IllegalArgumentException("Invalid color format. Color must start with '#' and be followed by 6 alphanumeric characters.");
         }
         User authenticatedUser = userRepository.findById(user.getId())
-                .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + user.getId()));
+                .orElseThrow(() -> new UserNotFoundException(HttpStatus.NOT_FOUND, "User not found with ID: " + user.getId()));
 
-        Card card = CardFactory.createCard(cardRequest,authenticatedUser);
+        Card card = CardFactory.createCard(cardRequest, authenticatedUser);
         cardRepository.save(card);
-        return new  ApiResponse(HttpStatus.CREATED.value(),"Card created successfully");
+        return new ApiResponse(HttpStatus.CREATED.value(), "Card created successfully");
     }
 
     /**
@@ -68,22 +68,22 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<Card> getAllCards(User user) {
         User currentUser = userRepository.findById(user.getId())
-                .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + user.getId()));
+                .orElseThrow(() -> new UserNotFoundException(HttpStatus.NOT_FOUND, "User not found with ID: " + user.getId()));
 
-        if(currentUser.getRole()== Role.ADMIN){
+        if (currentUser.getRole() == Role.ADMIN) {
             return cardRepository.findAll();
-        }else if (currentUser.getRole()==Role.MEMBER){
+        } else if (currentUser.getRole() == Role.MEMBER) {
             return cardRepository.findAllByUser(currentUser.getId());
-        }else {
-            throw new UserNotFoundException(HttpStatus.UNAUTHORIZED,"You are unauthorized to retrieve this resource");
+        } else {
+            throw new UserNotFoundException(HttpStatus.UNAUTHORIZED, "You are unauthorized to retrieve this resource");
         }
     }
 
     @Override
     @Transactional
-    public ApiResponse updateCard(Long cardId,Long userId, CardUpdateRequest cardUpdateRequest) {
+    public ApiResponse updateCard(Long cardId, Long userId, CardUpdateRequest cardUpdateRequest) {
         if (cardUpdateRequest.getCardStatus() != null) {
-            switch (cardUpdateRequest.getCardStatus() ) {
+            switch (cardUpdateRequest.getCardStatus()) {
                 case TODO:
                 case IN_PROGRESS:
                 case DONE:
@@ -93,10 +93,10 @@ public class CardServiceImpl implements CardService {
             }
         }
         User authenticatedUser = userRepository.findById(userId)
-                .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + userId));
+                .orElseThrow(() -> new UserNotFoundException(HttpStatus.NOT_FOUND, "User not found with ID: " + userId));
 
         Card card = cardRepository.findById(cardId)
-                .orElseThrow(() -> new CardNotFoundException(HttpStatus.NOT_FOUND,"Card not found with ID: " + cardId));
+                .orElseThrow(() -> new CardNotFoundException(HttpStatus.NOT_FOUND, "Card not found with ID: " + cardId));
 
         cardRepository.updateCard(
                 card.getId(),
@@ -105,36 +105,36 @@ public class CardServiceImpl implements CardService {
                 cardUpdateRequest.getDescription(),
                 cardUpdateRequest.getColor(),
                 cardUpdateRequest.getCardStatus()
-                );
+        );
 
-        return new ApiResponse(HttpStatus.OK.value(),"Card updated successfully");
+        return new ApiResponse(HttpStatus.OK.value(), "Card updated successfully");
     }
 
     @Override
-    public void deleteCard(Long cardId,User user) {
+    public void deleteCard(Long cardId, User user) {
         User authenticatedUser = userRepository.findById(user.getId())
-                .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + user.getId()));
+                .orElseThrow(() -> new UserNotFoundException(HttpStatus.NOT_FOUND, "User not found with ID: " + user.getId()));
         Card card = cardRepository.findById(cardId)
-                        .orElseThrow(()-> new CardNotFoundException(HttpStatus.NOT_FOUND,"Card not found with id "+ cardId));
+                .orElseThrow(() -> new CardNotFoundException(HttpStatus.NOT_FOUND, "Card not found with id " + cardId));
 
-        if(Objects.equals(authenticatedUser.getId(), card.getId())){
+        if (Objects.equals(authenticatedUser.getId(), card.getId())) {
             cardRepository.deleteById(cardId);
-        }else {
-            throw new ForbiddenException(HttpStatus.FORBIDDEN,"You are not authorized to delete this card");
+        } else {
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "You are not authorized to delete this card");
         }
     }
 
     @Override
-    public Card getCardById(Long cardId,Long userId) {
+    public Card getCardById(Long cardId, Long userId) {
         User authenticatedUser = userRepository.findById(userId)
-                .orElseThrow(()-> new UserNotFoundException(HttpStatus.NOT_FOUND,"User not found with ID: " + userId));
-        Card card =  cardRepository.findById(cardId)
-                .orElseThrow(()-> new CardNotFoundException(HttpStatus.NOT_FOUND,"Card not found with id:"+cardId));
-     if(Objects.equals(authenticatedUser.getId(), card.getCreatedBy().getId())){
-         return card;
-     }else {
-         throw  new ForbiddenException(HttpStatus.FORBIDDEN,"You are not authorized to access this resource");
-     }
+                .orElseThrow(() -> new UserNotFoundException(HttpStatus.NOT_FOUND, "User not found with ID: " + userId));
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new CardNotFoundException(HttpStatus.NOT_FOUND, "Card not found with id:" + cardId));
+        if (Objects.equals(authenticatedUser.getId(), card.getCreatedBy().getId())) {
+            return card;
+        } else {
+            throw new ForbiddenException(HttpStatus.FORBIDDEN, "You are not authorized to access this resource");
+        }
     }
 
     @Override
@@ -142,11 +142,10 @@ public class CardServiceImpl implements CardService {
                                            CardStatus statusFilter, LocalDateTime startDateFilter,
                                            LocalDateTime endDateFilter, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC,"name");
+        Pageable pageable = PageRequest.of(page, size, Sort.Direction.DESC, "name", "createdAt", "color", "status");
         Page<Card> cards = cardRepository.searchCards(userId, nameFilter, colorFilter, statusFilter, startDateFilter, endDateFilter, pageable);
-        List<Card> content =  cards.getNumberOfElements() == 0 ? Collections.emptyList() : cards.getContent();
+        List<Card> content = cards.getNumberOfElements() == 0 ? Collections.emptyList() : cards.getContent();
 
-        return new PagedResponse<>(content,cards.getNumber(), cards.getSize(), cards.getTotalElements(),cards.getTotalPages(),cards.isLast());
+        return new PagedResponse<>(content, cards.getNumber(), cards.getSize(), cards.getTotalElements(), cards.getTotalPages(), cards.isLast());
     }
-
 }
