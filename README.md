@@ -37,8 +37,6 @@ The following table lists the users along with their names and passwords:
 | 2       | jack@logicea.com    | password   | MEMBER |
 
 
-Feel free to populate the database with these users for testing purposes.
-
 ## Authentication
 
 Authentication is required to access the API endpoints. Users can authenticate by providing their credentials (username and password) in the request headers. Upon successful authentication, a JSON Web Token (JWT) will be returned, which should be included in the `Authorization` header of subsequent requests as a Bearer token.
